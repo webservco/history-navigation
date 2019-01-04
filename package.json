@@ -1,0 +1,26 @@
+{
+  "name": "@webservco/history-navigation",
+  "version": "1.0.0",
+  "description": "A jQuery plugin providing dynamic page navigation using the JavaScript History API",
+  "main": "dist/jquery.history-navigation.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webservco/history-navigation.git"
+  },
+  "keywords": [
+    "jquery-plugin"
+  ],
+  "author": "Radu Maier <ariademur@webserv.co>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webservco/history-navigation/issues"
+  },
+  "homepage": "https://github.com/webservco/history-navigation#readme",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "jquery": "^3.3.1"
+  }
+}
