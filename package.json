@@ -4,6 +4,8 @@
   "description": "A jQuery plugin providing dynamic page navigation using the JavaScript History API",
   "main": "dist/jquery.history-navigation.min.js",
   "scripts": {
+    "build": "gulp build",
+    "clean": "gulp clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +22,11 @@
   },
   "homepage": "https://github.com/webservco/history-navigation#readme",
   "devDependencies": {
+    "del": "^3.0.0",
     "gulp": "^4.0.0",
+    "gulp-cache": "^1.0.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-uglify": "^3.0.1",
     "jquery": "^3.3.1"
   }
 }
