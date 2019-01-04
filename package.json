@@ -13,6 +13,7 @@
     "url": "git+https://github.com/webservco/history-navigation.git"
   },
   "keywords": [
+    "ecosystem:jquery",
     "jquery-plugin"
   ],
   "author": "Radu Maier <ariademur@webserv.co>",
