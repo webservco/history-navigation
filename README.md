@@ -2,6 +2,8 @@
 
 A jQuery plugin providing dynamic page navigation using the JavaScript History API
 
+npm package: [@webservco/history-navigation](https://www.npmjs.com/package/@webservco/history-navigation)
+
 ---
 
 ## Features:
