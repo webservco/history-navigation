@@ -1,20 +1,23 @@
 (function( $ ) {
 
-    var opts;
-
     // Plugin definition.
     $.fn.historyNavigation = function( options ) {
         // Extend our default options with those provided.
         // Note that the first argument to extend is an empty
         // object – this is to keep from overriding our "defaults" object.
-        opts = $.extend( {}, $.fn.historyNavigation.defaults, options );
+        var opts = $.extend( {}, $.fn.historyNavigation.defaults, options );
+        $.data(document, 'historyNavigation', opts);
 
         if (!$.fn.historyNavigation.supportsHistory()) {
             return false
         }
 
         $(window).bind("popstate", function( event ) {
-            $.fn.historyNavigation.loadUrl(event.target.location.href, opts.mainElementId, opts.contentElementId);
+            $.fn.historyNavigation.loadUrl(
+                event.target.location.href,
+                opts.mainElementId,
+                opts.contentElementId
+            );
 
             if (typeof opts.onPopState === 'function') {
                 opts.onPopState(event); // callback
@@ -49,6 +52,7 @@
     };
 
     $.fn.historyNavigation.handleUrlLoad = function(status, contentElement, url) {
+        var opts = $.data(document, 'historyNavigation');
         if (status == "error") {
             contentElement
             .html("<div class=\"alert alert-danger\" role=\"alert\">Error loading page</div>")
