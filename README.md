@@ -49,9 +49,8 @@ $(document).ready(function() {
 });
 ```
 
-### Examples
-For an example of a full HTML implementation please see the project [webservco/html5-app](https://github.com/webservco/html5-app)
-
+### Documentation and examples
+For documentation and a full HTML implementation example please see the project [webservco/html5-app](https://github.com/webservco/html5-app)
 
 ---
 
