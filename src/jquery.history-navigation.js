@@ -74,8 +74,12 @@
             mainElement
             .hide()
             .load(url + " #" + contentElementId, function(response, status, xhr) {
+                var newUrl = $("#" + contentElementId).data("url") || url; // check custom url data attribute
+                if (newUrl != url) { // is a redirect
+                    window.history.pushState(null, null, newUrl); // make sure the current url appears in the browser url bar
+                }
                 mainElement.fadeIn(200, function() {
-                    $.fn.historyNavigation.handleUrlLoad(status, contentElement, url);
+                    $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl);
                 });
             });
         });
