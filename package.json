@@ -1,6 +1,6 @@
 {
   "name": "@webservco/history-navigation",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A jQuery plugin providing dynamic page navigation using the JavaScript History API",
   "main": "dist/jquery.history-navigation.min.js",
   "scripts": {
