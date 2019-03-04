@@ -51,7 +51,7 @@
         onPopState: function( event ) {} // callback
     };
 
-    $.fn.historyNavigation.handleUrlLoad = function(status, contentElement, url) {
+    $.fn.historyNavigation.handleUrlLoad = function(status, contentElement, url, loadedContentElement) {
         var opts = $.data(document, 'historyNavigation');
         if (status == "error") {
             contentElement
@@ -63,7 +63,7 @@
         var a = navItem.find("a." + opts.linkClass + "[href=\""+url+"\"]");
         a.closest(".nav-item").addClass("active");
         if (typeof opts.onUrlLoaded === 'function') {
-            opts.onUrlLoaded(contentElement); // callback
+            opts.onUrlLoaded(loadedContentElement); // callback
         }
     };
 
@@ -71,17 +71,52 @@
         var mainElement = $("#" + mainElementId);
         var contentElement = $("#" + contentElementId);
         contentElement.fadeOut(200, function() {
+            /*
+            http://api.jquery.com/load/
+            "jQuery uses the browser's .innerHTML property to parse the retrieved document and insert it into the
+            current document. During this process, browsers often filter elements from the document such as <html>,
+            <title>, or <head> elements. As a result, the elements retrieved by .load() may not be exactly the same
+            as if the document were retrieved directly by the browser."
+            "If .load() is called with a selector expression appended to the URL, however, the scripts are stripped
+            out prior to the DOM being updated, and thus are not executed."
             mainElement
             .hide()
             .load(url + " #" + contentElementId, function(response, status, xhr) {
                 var newUrl = $("#" + contentElementId).data("url") || url; // check custom url data attribute
                 if (newUrl != url) { // is a redirect
-                    window.history.pushState(null, null, newUrl); // make sure the current url appears in the browser url bar
+                    // make sure the current url appears in the browser url bar
+                    window.history.pushState(null, null, newUrl);
                 }
                 mainElement.fadeIn(200, function() {
-                    $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl);
+                    $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl, $("#" + contentElementId));
                 });
             });
+            */
+            mainElement.hide();
+            var jqxhr = $.ajax({
+                method: "GET",
+                url: url,
+                data: {},
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8'", // default
+                error: function(jqXHR, textStatus, errorThrown){
+                    //console.log(textStatus);
+                },
+                success: function(data, textStatus, jqXHR){
+                    var content = $(data).find("#" + contentElementId);
+                    mainElement.html(content);
+                    var newUrl = $("#" + contentElementId).data("url") || url; // check custom url data attribute
+                    if (newUrl != url) { // is a redirect
+                        // make sure the current url appears in the browser url bar
+                        window.history.pushState(null, null, newUrl);
+                    }
+                    mainElement.fadeIn(200, function() {
+                        $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl, $("#" + contentElementId));
+                    });
+                }
+            })
+            .done(function(){})
+            .fail(function(){})
+            .always(function(){});
         });
     };
 
