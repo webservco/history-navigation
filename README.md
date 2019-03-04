@@ -39,7 +39,7 @@ $(document).ready(function() {
         onLinkClick: function( element ) { // callback
             //console.log("callback: onLinkClick");
         },
-        onUrlLoaded: function() { // callback
+        onUrlLoaded: function( element ) { // callback
             //console.log("callback: onUrlLoaded");
         },
         onPopState: function( event ) { // callback

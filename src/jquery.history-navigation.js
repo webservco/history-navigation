@@ -47,7 +47,7 @@
         contentElementId: "content", // id of content element
         navigationElementClass: "navbar", // class of the element containing the navigation links
         onLinkClick: function( element ) {}, // callback
-        onUrlLoaded: function() {}, // callback
+        onUrlLoaded: function( element ) {}, // callback
         onPopState: function( event ) {} // callback
     };
 
@@ -63,7 +63,7 @@
         var a = navItem.find("a." + opts.linkClass + "[href=\""+url+"\"]");
         a.closest(".nav-item").addClass("active");
         if (typeof opts.onUrlLoaded === 'function') {
-            opts.onUrlLoaded(); // callback
+            opts.onUrlLoaded(contentElement); // callback
         }
     };
 
