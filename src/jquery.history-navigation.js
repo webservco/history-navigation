@@ -47,76 +47,86 @@
         contentElementId: "content", // id of content element
         navigationElementClass: "navbar", // class of the element containing the navigation links
         onLinkClick: function( element ) {}, // callback
-        onUrlLoaded: function( element ) {}, // callback
+        onUrlLoaded: function( newUrl ) {}, // callback
+        onUrlLoadError: function( newUrl, resultObject ) {}, // callback
         onPopState: function( event ) {} // callback
     };
 
-    $.fn.historyNavigation.handleUrlLoad = function(status, contentElement, url, loadedContentElement) {
+    $.fn.historyNavigation.handleUrlLoad = function(newUrl, resultObject, resultStatus) {
+
         var opts = $.data(document, 'historyNavigation');
-        if (status == "error") {
-            contentElement
-            .html("<div class=\"alert alert-danger\" role=\"alert\">Error loading page</div>")
-            .show();
-        }
         var navItem = $("." + opts.navigationElementClass).find(".nav-item");
+
         navItem.removeClass("active");
-        var a = navItem.find("a." + opts.linkClass + "[href=\""+url+"\"]");
+        var a = navItem.find("a." + opts.linkClass + "[href=\""+newUrl+"\"]");
         a.closest(".nav-item").addClass("active");
-        if (typeof opts.onUrlLoaded === 'function') {
-            opts.onUrlLoaded(loadedContentElement); // callback
+
+        if (resultStatus == "error") {
+            if (typeof opts.onUrlLoadError === 'function') {
+                opts.onUrlLoadError(newUrl, resultObject); // callback
+            }
+        } else {
+            if (typeof opts.onUrlLoaded === 'function') {
+                opts.onUrlLoaded(newUrl); // callback
+            }
         }
     };
 
     $.fn.historyNavigation.loadUrl = function(url, mainElementId, contentElementId) {
+        var opts = $.data(document, 'historyNavigation');
         var mainElement = $("#" + mainElementId);
         var contentElement = $("#" + contentElementId);
-        contentElement.fadeOut(200, function() {
-            /*
-            http://api.jquery.com/load/
-            "jQuery uses the browser's .innerHTML property to parse the retrieved document and insert it into the
-            current document. During this process, browsers often filter elements from the document such as <html>,
-            <title>, or <head> elements. As a result, the elements retrieved by .load() may not be exactly the same
-            as if the document were retrieved directly by the browser."
-            "If .load() is called with a selector expression appended to the URL, however, the scripts are stripped
-            out prior to the DOM being updated, and thus are not executed."
-            mainElement
-            .hide()
-            .load(url + " #" + contentElementId, function(response, status, xhr) {
-                var newUrl = $("#" + contentElementId).data("url") || url; // check custom url data attribute
-                if (newUrl != url) { // is a redirect
-                    // make sure the current url appears in the browser url bar
-                    window.history.pushState(null, null, newUrl);
-                }
-                mainElement.fadeIn(200, function() {
-                    $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl, $("#" + contentElementId));
-                });
-            });
-            */
-            mainElement.hide();
+
+        contentElement.fadeOut(200, function() { // hide contentElement, then:
+
+            mainElement.hide(); //hide main element
+
+            var newUrl;
+            var resultObject;
+            var resultStatus;
+
             var jqxhr = $.ajax({
                 method: "GET",
                 url: url,
                 data: {},
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8'", // default
                 error: function(jqXHR, textStatus, errorThrown){
-                    //console.log(textStatus);
+                    newUrl = url;
+                    resultObject = jqXHR;
+                    resultStatus = textStatus;
+
+                    /* if content element has the custom url data attribute */
+                    if (contentElement.is('[data-url]')) {
+                        contentElement.attr("data-url", newUrl); // set new url
+                    }
+                    contentElement.html("") // empty
+                    .show(); // display
                 },
                 success: function(data, textStatus, jqXHR){
                     var content = $(data).find("#" + contentElementId);
-                    mainElement.html(content);
-                    var newUrl = $("#" + contentElementId).data("url") || url; // check custom url data attribute
-                    if (newUrl != url) { // is a redirect
-                        // make sure the current url appears in the browser url bar
+                    mainElement.empty();
+                    mainElement.append(content);
+                    /*
+                    Simulate "follow redirects".
+                    Check if the loaded content has a data-url attribute. If so, use it as the new url.
+                    Otherwise the new url is the one actually being loaded */
+                    newUrl = content.data("url") || url;
+                    /* If the new url (from custom data) is different than the one we have loaded */
+                    if (newUrl != url) {
+                        /* make sure the new url appears in the browser url bar */
                         window.history.pushState(null, null, newUrl);
                     }
-                    mainElement.fadeIn(200, function() {
-                        $.fn.historyNavigation.handleUrlLoad(status, contentElement, newUrl, $("#" + contentElementId));
-                    });
+                    resultObject = jqXHR;
+                    resultStatus = textStatus;
                 }
             })
             .done(function(){})
             .fail(function(){})
-            .always(function(){});
+            .always(function(){
+                mainElement.fadeIn(200, function() {
+                    $.fn.historyNavigation.handleUrlLoad(newUrl, resultObject, resultStatus);
+                });
+            });
         });
     };
 
