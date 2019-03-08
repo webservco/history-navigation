@@ -27,9 +27,10 @@ npm install @webservco/history-navigation --save-dev
 > Alternatively you could download the plugin for the project's `src` directory.
 
 ### Initialize the plugin
+
 > Settings presented are the default ones
-```
-$(document).ready(function() {
+
+```JavaScript
     /* history navigation */
     $(document).historyNavigation({
         linkClass: "app-nav", // class of the links which trigger the navigation
@@ -39,14 +40,22 @@ $(document).ready(function() {
         onLinkClick: function( element ) { // callback
             //console.log("callback: onLinkClick");
         },
-        onUrlLoaded: function( element ) { // callback
+        onUrlLoaded: function( newUrl ) { // callback
             //console.log("callback: onUrlLoaded");
+        },
+        onUrlLoadError: function( newUrl, resultObject ) {
+            //console.log("callback: onUrlLoadError");
+            /* set custom content on error */
+            $("#content").html(
+                "<div class=\"alert alert-danger\" role=\"alert\"><h1>Error loading page</h1>" +
+                "Status: " + resultObject.status + " " + resultObject.statusText +
+                "</div>"
+            );
         },
         onPopState: function( event ) { // callback
             //console.log("callback: onPopstate");
         },
     });
-});
 ```
 
 ### Documentation and examples
@@ -73,5 +82,17 @@ npm run build
 ```
 npm run clean
 ```
+
+---
+
+## Notes
+
+Initially the plugin was using the jQuery `.load()` functionality.
+It has been however removed, because it doesn't load any scripts.
+> http://api.jquery.com/load/
+>
+> "jQuery uses the browser's .innerHTML property to parse the retrieved document and insert it into the current document. During this process, browsers often filter elements from the document such as html, title, or head elements. As a result, the elements retrieved by .load() may not be exactly the same as if the document were retrieved directly by the browser."
+>
+> "If .load() is called with a selector expression appended to the URL, however, the scripts are stripped out prior to the DOM being updated, and thus are not executed."
 
 ---
