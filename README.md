@@ -95,4 +95,15 @@ It has been however removed, because it doesn't load any scripts.
 >
 > "If .load() is called with a selector expression appended to the URL, however, the scripts are stripped out prior to the DOM being updated, and thus are not executed."
 
+### TODO: handle meta title / description
+
+Not working:
+
+```javascript
+var title = $(data).find("title").text();
+var description = $(data).find('meta[name=description]').attr("content");
+console.log(title);
+console.log(description);
+```
+
 ---
