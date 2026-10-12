@@ -1,7 +1,7 @@
 {
   "name": "@webservco/history-navigation",
   "version": "1.5.0",
-  "description": "A jQuery plugin providing dynamic page navigation using the JavaScript History API",
+  "description": "A jQuery plugin. Loads local pages with Ajax and the History API instead of full page reloads, and highlights the active link in the navigation menu.",
   "main": "dist/jquery.history-navigation.min.js",
   "scripts": {
     "build": "gulp build",

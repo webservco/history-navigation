@@ -1,103 +1,80 @@
-# history-navigation
+# @webservco/history-navigation
 
-A jQuery plugin providing dynamic page navigation using the JavaScript History API
+A jQuery plugin.
 
-npm package: [@webservco/history-navigation](https://www.npmjs.com/package/@webservco/history-navigation)
+Loads local pages with Ajax and the History API instead of full page reloads, and highlights the active link in the navigation menu.
+
+- Requires: jQuery 3
+- Related: [webservco/html5-app](https://github.com/webservco/html5-app) (a full HTML example using it)
 
 ---
 
-## Features:
-- Dynamic page navigation (JavaScript "history" navigation): local pages are loaded dynamically;
-- Highlight active page in the navigation menu;
+## Installation
+
+```shell
+npm install @webservco/history-navigation
+```
+
+Include it after jQuery:
+
+```html
+<script defer src="node_modules/@webservco/history-navigation/src/jquery.history-navigation.js"></script>
+```
 
 ---
 
 ## Usage
 
-### Install
-```
-npm install @webservco/history-navigation --save-dev
-```
+Each page wraps its content in two elements. When a link with the `app-nav` class is clicked, the plugin fetches the page, takes its `#content` element, and puts it in `#main` of the current page.
 
-### Include the script tag in your project (after jQuery)
-```
-<script defer src="./../node_modules/@webservco/history-navigation/src/jquery.history-navigation.js"></script>
-```
-
-> Alternatively you could download the plugin for the project's `src` directory.
-
-### Initialize the plugin
-
-> Settings presented are the default ones
-
-```JavaScript
-    /* history navigation */
-    $(document).historyNavigation({
-        linkClass: "app-nav", // class of the links which trigger the navigation
-        mainElementId: "main", // id of content wrapper element
-        contentElementId: "content", // id of content element
-        navigationElementClass: "navbar", // class of the element containing the navigation links
-        onLinkClick: function( element ) { // callback
-            //console.log("callback: onLinkClick");
-        },
-        onUrlLoaded: function( newUrl ) { // callback
-            //console.log("callback: onUrlLoaded");
-        },
-        onUrlLoadError: function( newUrl, resultObject ) {
-            //console.log("callback: onUrlLoadError");
-            /* set custom content on error */
-            $("#content").html(
-                "<div class=\"alert alert-danger\" role=\"alert\"><h1>Error loading page</h1>" +
-                "Status: " + resultObject.status + " " + resultObject.statusText +
-                "</div>"
-            );
-        },
-        onPopState: function( event ) { // callback
-            //console.log("callback: onPopstate");
-        },
-    });
+```html
+<nav class="navbar">
+    <ul>
+        <li class="nav-item"><a class="app-nav" href="/about">About</a></li>
+    </ul>
+</nav>
+<main id="main">
+    <div id="content">...</div>
+</main>
 ```
 
-### Documentation and examples
-For documentation and a full HTML implementation example please see the project [webservco/html5-app](https://github.com/webservco/html5-app)
+```javascript
+// These are the default options.
+$(document).historyNavigation({
+    // Class of the links that load pages.
+    linkClass: 'app-nav',
+    // ID of the element that receives the content.
+    mainElementId: 'main',
+    // ID of the element to take from the loaded page.
+    contentElementId: 'content',
+    // Class of the element holding the .nav-item links.
+    navigationElementClass: 'navbar',
+    onLinkClick: function (element) {},
+    onUrlLoaded: function (newUrl) {},
+    onUrlLoadError: function (newUrl, jqXHR) {
+        $('#content').html('Error loading page: ' + jqXHR.status + ' ' + jqXHR.statusText);
+    },
+    onPopState: function (event) {}
+});
+```
 
----
-
-## Development Setup
-
-### Install
-```
-git clone https://github.com/webservco/history-navigation.git my-project
-cd my-project
-npm install
-```
-
-### Build the project
-Clean everything and create production files in the `dist` folder:
-```
-npm run build
-```
-
-### Cleanup
-```
-npm run clean
-```
+After each load, the `.nav-item` holding the link to the new URL gets the `active` class. The back and forward buttons load pages the same way.
 
 ---
 
 ## Notes
 
-Initially the plugin was using the jQuery `.load()` functionality.
-It has been however removed, because it doesn't load any scripts.
-> http://api.jquery.com/load/
->
-> "jQuery uses the browser's .innerHTML property to parse the retrieved document and insert it into the current document. During this process, browsers often filter elements from the document such as html, title, or head elements. As a result, the elements retrieved by .load() may not be exactly the same as if the document were retrieved directly by the browser."
->
-> "If .load() is called with a selector expression appended to the URL, however, the scripts are stripped out prior to the DOM being updated, and thus are not executed."
+If the loaded `#content` element has a `data-url` attribute, that URL replaces the requested one in the address bar. Use it to simulate a redirect.
 
-### TODO: handle meta title / description
+The plugin doesn't use jQuery's [`.load()`](https://api.jquery.com/load/), because `.load()` with a selector strips the scripts from the loaded content. The page title and meta description aren't updated after a load.
 
-Not working:
+The published npm package ships only `src/`, so `main` in `package.json` points to a file that isn't there. Include the `src` file directly.
+
+Links with `href="#"` don't load anything, but still call `onLinkClick`. In browsers without the History API the plugin does nothing and links work normally.
+
+### TODO
+
+Update the page title and meta description after a load. This attempt didn't work:
 
 ```javascript
 var title = $(data).find("title").text();
@@ -107,3 +84,20 @@ console.log(description);
 ```
 
 ---
+
+## Development
+
+```shell
+# Install dependencies.
+npm install
+# Create the minified file in dist/.
+npm run build
+# Delete dist/ and the build cache.
+npm run clean
+```
+
+---
+
+## License
+
+[MIT](LICENSE)
